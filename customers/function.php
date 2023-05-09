@@ -2,6 +2,7 @@
 
     require_once '../inc/dbcon.php';
 
+    // function to get the list of Customers from the database for the read.php
     function getCustomerList(){
 
         global $conn;
@@ -46,6 +47,66 @@
                 header("HTTP/1.0 500 Internal Server Error");
                 return json_encode($data);    
          }
+    }
+    
+    // function to return the error message
+    function error422($message){
+        
+        $data = [
+            'status'  => 422,
+            'message' => $message, 
+        ];
+        header("HTTP/1.0 422 Unprocessable Entity");
+        echo json_encode($data); 
+        exit();
+    }
+
+    // function to store the data into the database
+    function storeCustomer($customerInput){
+
+        global $conn;
+
+        $name = mysqli_real_escape_string($conn, $customerInput['name']);
+        $email = mysqli_real_escape_string($conn, $customerInput['email']);
+        $phone = mysqli_real_escape_string($conn, $customerInput['phone']);
+
+        if (empty($name)) {
+            
+            return error422('Enter your name');
+
+        } elseif(empty($email)) {
+
+            return error422('Enter your email');
+
+        }elseif(empty($phone)){
+
+            return error422('Enter your phone');
+        }else {
+            
+            $query = "INSERT INTO customers (name, email, phone) VALUES ('$name', '$email', '$phone')";
+            $result = mysqli_query($conn, $query);
+
+            if ($result) {
+                $data = [
+                    'status'   => 201,
+                    'message'  => 'Customer created Successfully',
+                ];
+                header("HTTP/1.0 201 Created");
+                return json_encode($data);
+
+            } else {
+
+                $data = [
+                    'status'   => 500,
+                    'message'  => 'Internal Server Error',
+                ];
+                header("HTTP/1.0 500 Internal Server Error");
+                return json_encode($data);   
+            }
+            
+        }
+        
+
     }
 
 ?>
