@@ -1,2 +1,2 @@
 # php-rest-api
-how to create a rest/restfull api in PHP
+Como criar uma API REST/RESTful em PHP
